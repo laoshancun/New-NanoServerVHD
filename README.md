@@ -26,6 +26,7 @@ This script can be found:
 - Script Center: https://gallery.technet.microsoft.com/scriptcenter/Create-a-New-Nano-Server-61f674f1
 
 ## Change Log
+- 2016-07-8: fix a bug,add a Language parameter(default en-us).
 - 2016-05-14: Updated to support Windows Server 2016 TP5.
 - 2015-12-01: Added WorkFolder parameter to override default work folder path.
 - 2015-11-21: Offline Domain Join support added. Fix to adding SCVMM packages.

@@ -219,6 +219,9 @@ Param (
 
     [ValidateNotNullOrEmpty()]
     [String]$DJoinFile,
+
+    [ValidateNotNullOrEmpty()]
+    [String]$Language='en-us',
     
     [ValidateNotNullOrEmpty()]
     [String]$WorkFolder = $ENV:Temp 
@@ -296,8 +299,8 @@ If ($IPaddress)
 [String]$MountFolder = Join-Path -Path $WorkFolder -ChildPath 'Mount'
 [String]$TempVHDName = "NanoServer.$VHDFormat"
 Switch ($VHDFormat) {
-    'VHD' { [String]$DiskLayout = 'BIOS' }
-    'VHDx' { [String]$DiskLayout = 'UEFI' }
+    'VHD' { [String]$DiskLayout = 'BIOS';[String]$VHDPartitionStyle='MBR'; }
+    'VHDx' { [String]$DiskLayout = 'UEFI';[String]$VHDPartitionStyle='GPT'; }
 }
 
 # Create working folder
@@ -335,6 +338,7 @@ if ($CacheFolder) {
             -VHD $CachedVHD `
             –VHDFormat $VHDFormat `
             -Edition $Edition `
+            -VHDPartitionStyle $VHDPartitionStyle `
             -DiskLayout $DiskLayout
     }
     $null = Copy-Item -Path $CachedVHD -Destination $TempVHD
@@ -347,7 +351,8 @@ if ($CacheFolder) {
         -VHD $TempVHD `
         –VHDFormat $VHDFormat `
         -Edition $Edition `
-        -VHDPartitionStyle $VHDPartitionStyle
+        -VHDPartitionStyle $VHDPartitionStyle `
+        -DiskLayout $DiskLayout
 }
 
 
@@ -383,8 +388,8 @@ foreach ($Package in $PackageList) {
     If ($Package.Name -in $Packages) {
         Write-Verbose -Message "Adding Package $($Package.Filename) to Image"
         & "$DismFolder\Dism.exe" '/Add-Package' "/PackagePath:$($DriveLetter):\NanoServer\packages\$($Package.Filename)" "/Image:$MountFolder"
-        $PackageLangFile = $Package.Filename -replace '.cab',"_en-us.cab"
-        & "$DismFolder\Dism.exe" '/Add-Package' "/PackagePath:$($DriveLetter):\NanoServer\packages\en-us\$PackageLangFile" "/Image:$MountFolder"
+        $PackageLangFile = $Package.Filename -replace '.cab',"_$Language.cab"
+        & "$DismFolder\Dism.exe" '/Add-Package' "/PackagePath:$($DriveLetter):\NanoServer\packages\$Language\$PackageLangFile" "/Image:$MountFolder"
     }
 }
 
