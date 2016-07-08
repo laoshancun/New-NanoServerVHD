@@ -230,7 +230,7 @@ Param (
 If (-not (Test-Path -Path .\Convert-WindowsImage.ps1 -PathType Leaf)) {
     Write-Host 'Downloading the Convert-WindowsImage.ps1 script from GitHub'
     Invoke-WebRequest `
-        -Uri 'https://raw.githubusercontent.com/PlagueHO/New-NanoServerVHD/master/Convert-WindowsImage.ps1' `
+        -Uri 'https://raw.githubusercontent.com/Laoshancun/New-NanoServerVHD/master/Convert-WindowsImage.ps1' `
         -OutFile .\Convert-WindowsImage.ps1 `
 }
 
@@ -298,9 +298,9 @@ If ($IPaddress)
 [String]$DismFolder = Join-Path -Path $WorkFolder -ChildPath 'DISM'
 [String]$MountFolder = Join-Path -Path $WorkFolder -ChildPath 'Mount'
 [String]$TempVHDName = "NanoServer.$VHDFormat"
-Switch ($VHDFormat) {
+Switch ($VHDFormat.ToUpper()) {
     'VHD' { [String]$DiskLayout = 'BIOS';[String]$VHDPartitionStyle='MBR'; }
-    'VHDx' { [String]$DiskLayout = 'UEFI';[String]$VHDPartitionStyle='GPT'; }
+    'VHDX' { [String]$DiskLayout = 'UEFI';[String]$VHDPartitionStyle='GPT'; }
 }
 
 # Create working folder
@@ -338,7 +338,6 @@ if ($CacheFolder) {
             -VHD $CachedVHD `
             –VHDFormat $VHDFormat `
             -Edition $Edition `
-            -VHDPartitionStyle $VHDPartitionStyle `
             -DiskLayout $DiskLayout
     }
     $null = Copy-Item -Path $CachedVHD -Destination $TempVHD
@@ -351,8 +350,7 @@ if ($CacheFolder) {
         -VHD $TempVHD `
         –VHDFormat $VHDFormat `
         -Edition $Edition `
-        -VHDPartitionStyle $VHDPartitionStyle `
-        -DiskLayout $DiskLayout
+        -VHDPartitionStyle $VHDPartitionStyle
 }
 
 
